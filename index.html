@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WEATHER RAGDOLL SIM — Симулятор Катастроф</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+  <!-- Loading -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-logo">WEATHER<span>RAGDOLL</span>SIM</div>
+      <div class="loader-bar"><div class="loader-progress"></div></div>
+      <div class="loader-text">Загрузка физики и атмосферы...</div>
+    </div>
+    <div class="loader-bg"></div>
+  </div>
+
+  <!-- Top Bar -->
+  <header id="topbar">
+    <div class="brand">
+      <div class="brand-icon">◉</div>
+      <div>
+        <div class="brand-title">WEATHER RAGDOLL SIM</div>
+        <div class="brand-sub">СИМУЛЯТОР КАТАСТРОФ • ОТ ПЕРВОГО ЛИЦА</div>
+      </div>
+    </div>
+    <div class="top-stats">
+      <div class="stat-pill" id="fps-pill">60 FPS</div>
+      <div class="stat-pill" id="weather-pill">⛅ ЯСНО</div>
+      <div class="stat-pill accent" id="wind-pill">Ветер 0 м/с</div>
+    </div>
+    <button id="menu-toggle">☰</button>
+  </header>
+
+  <!-- Left Panel -->
+  <aside id="left-panel">
+    <div class="panel-section">
+      <div class="section-label">— КАТАСТРОФЫ —</div>
+      <div class="disaster-grid">
+        <button class="disaster-card active" data-disaster="clear">
+          <span class="dc-icon">☀️</span>
+          <span class="dc-name">Ясно</span>
+          <span class="dc-desc">штиль</span>
+        </button>
+        <button class="disaster-card" data-disaster="rain">
+          <span class="dc-icon">🌧️</span>
+          <span class="dc-name">Ливень</span>
+          <span class="dc-desc">дождь + лужи</span>
+        </button>
+        <button class="disaster-card" data-disaster="storm">
+          <span class="dc-icon">⛈️</span>
+          <span class="dc-name">Гроза</span>
+          <span class="dc-desc">молнии</span>
+        </button>
+        <button class="disaster-card danger" data-disaster="tornado">
+          <span class="dc-icon">🌪️</span>
+          <span class="dc-name">Торнадо</span>
+          <span class="dc-desc">воронка</span>
+        </button>
+        <button class="disaster-card danger" data-disaster="hurricane">
+          <span class="dc-icon">🌀</span>
+          <span class="dc-name">Ураган</span>
+          <span class="dc-desc">120 м/с</span>
+        </button>
+        <button class="disaster-card danger" data-disaster="flood">
+          <span class="dc-icon">🌊</span>
+          <span class="dc-name">Потоп</span>
+          <span class="dc-desc">подъём воды</span>
+        </button>
+        <button class="disaster-card danger" data-disaster="earthquake">
+          <span class="dc-icon">🏚️</span>
+          <span class="dc-name">Землетрясение</span>
+          <span class="dc-desc">обрушение</span>
+        </button>
+        <button class="disaster-card" data-disaster="blizzard">
+          <span class="dc-icon">❄️</span>
+          <span class="dc-name">Буран</span>
+          <span class="dc-desc">снег + пурга</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">— МОЩНОСТЬ СТИХИИ —</div>
+      <div class="control-row">
+        <span>Интенсивность</span>
+        <input type="range" id="intensity" min="0" max="100" value="65">
+        <span id="intensity-val">65%</span>
+      </div>
+      <div class="control-row">
+        <span>Ветер</span>
+        <input type="range" id="wind-control" min="0" max="100" value="30">
+        <span id="wind-val">30%</span>
+      </div>
+      <div class="control-row">
+        <span>Разрушения</span>
+        <input type="range" id="destruction" min="0" max="100" value="80">
+        <span id="destr-val">80%</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">— МИР —</div>
+      <div class="world-buttons">
+        <button class="mini-btn" id="btn-daynight">🌗 День / Ночь</button>
+        <button class="mini-btn" id="btn-reset">⟲ Сбросить мир</button>
+        <button class="mini-btn" id="btn-ragdolls">🧍 Спавн рэгдоллов</button>
+        <button class="mini-btn" id="btn-explosion">💥 Взрыв</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">— ВОДА —</div>
+      <div class="control-row">
+        <span>Уровень воды</span>
+        <input type="range" id="water-level" min="0" max="100" value="0">
+        <span id="water-val">0 м</span>
+      </div>
+      <button class="action-btn" id="btn-wave">🌊 Пустить волну</button>
+    </div>
+
+    <div class="panel-hint">Нажми <b>T</b> — торнадо, <b>G</b> — гроза, <b>F</b> — потоп, <b>E</b> — землетрясение</div>
+  </aside>
+
+  <!-- Right HUD -->
+  <aside id="right-hud">
+    <div class="hud-card">
+      <div class="hud-title">СОСТОЯНИЕ ИГРОКА</div>
+      <div class="hud-row"><span>Скорость</span><b id="speed-val">0 км/ч</b></div>
+      <div class="hud-row"><span>Высота</span><b id="alt-val">0 м</b></div>
+      <div class="hud-bar"><div id="stamina-bar" style="width:100%"></div></div>
+      <div class="hud-row small">Выносливость • Бег на Shift</div>
+    </div>
+    <div class="hud-card">
+      <div class="hud-title">АТМОСФЕРА</div>
+      <div class="hud-row"><span>Температура</span><b id="temp-val">+22°</b></div>
+      <div class="hud-row"><span>Давление</span><b id="press-val">760 мм</b></div>
+      <div class="hud-row"><span>Влажность</span><b id="hum-val">45%</b></div>
+      <div class="hud-row"><span>Видимость</span><b id="vis-val">10 км</b></div>
+    </div>
+    <div class="hud-card warn">
+      <div class="hud-title">⚠ ПРЕДУПРЕЖДЕНИЕ</div>
+      <div id="warning-text">Система мониторинга активна. Выберите катастрофу слева.</div>
+    </div>
+  </aside>
+
+  <!-- Center Crosshair & Prompt -->
+  <div id="crosshair">
+    <div class="ch-dot"></div>
+    <div class="ch-ring"></div>
+  </div>
+  <div id="center-prompt">
+    <div class="prompt-title">НАЖМИ ДЛЯ ВХОДА В СИМУЛЯЦИЮ</div>
+    <div class="prompt-sub">WASD — движение • Мышь — обзор • Пробел — прыжок • Shift — бег • E — взаимодействие</div>
+    <div class="prompt-sub small">Кликни по экрану чтобы захватить мышь. ESC — выйти из захвата</div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div id="bottom-bar">
+    <div class="bottom-left">
+      <span class="kbd">WASD</span> движение
+      <span class="kbd">МЫШЬ</span> обзор
+      <span class="kbd">SHIFT</span> бег
+      <span class="kbd">SPACE</span> прыжок
+      <span class="kbd">C</span> присесть
+    </div>
+    <div class="bottom-right">
+      <span id="obj-count">Объектов: 0</span> • <span id="phys-count">Физика: 60 Hz</span>
+    </div>
+  </div>
+
+  <div id="flash"></div>
+  <canvas id="c"></canvas>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
