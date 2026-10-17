@@ -1,4 +1,7 @@
 node_modules/
 dist/
+release/
 .env
 .DS_Store
+out/
+package-lock.json

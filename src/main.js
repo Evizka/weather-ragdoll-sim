@@ -944,10 +944,16 @@ function animate(){
     ragdolls.forEach(r=> r.bodies.forEach(b=>{
       b.applyForce(new CANNON.Vec3(windVector.x*18, 1.2, windVector.z*18), b.position)
     }))
-    // lean trees? camera shake
-    camera.rotation.z = Math.sin(now*0.002)*0.02 + Math.sin(now*0.007)*0.01
-  } else {
-    camera.rotation.z *= 0.92
+    // убран крен камеры — теперь строго горизонт (фиксит баг качки налево-направо)
+    // hurricane больше не трогает camera.rotation.z
+  }
+  // === АНТИ-КРЕН: фиксируем горизонт, убираем качку налево-направо ===
+  if (Math.abs(camera.rotation.z) > 0.001) {
+    const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ')
+    euler.z = THREE.MathUtils.lerp(euler.z, 0, dt * 8)
+    if (Math.abs(euler.z) < 0.001) euler.z = 0
+    camera.quaternion.setFromEuler(euler)
+    camera.rotation.z = 0
   }
 
   // water update
